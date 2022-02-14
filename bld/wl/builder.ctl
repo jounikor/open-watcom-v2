@@ -101,7 +101,7 @@ set PROJDIR=<CWD>
     <CCCMD> osxx64/wlink.exe                <OWRELROOT>/osx64/wlink
 #    <CCCMD> ms2wlink/osxx64/ms2wlink.exe    <OWRELROOT>/osx64/ms2wlink
 #    <CCCMD> fcenable/osxx64/fcenable.exe    <OWRELROOT>/osx64/fcenable
-#    <CCCMD> exe2bin/osxx64/exe2bin.exe      <OWRELROOT>/osx64/exe2bin
+    <CCCMD> exe2bin/osxx64/exe2bin.exe      <OWRELROOT>/osx64/exe2bin
     <CCCMD> lnk/osxx64/wlink.lnk            <OWRELROOT>/osx64/
 
 [ BLOCK . . ]

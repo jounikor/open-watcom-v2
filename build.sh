@@ -4,6 +4,11 @@
 # using the host platform's native C/C++ compiler or OW tools.
 #
 # Expects POSIX or OW tools.
+#
+# To build for OSX both phases use:
+#   ./build.sh rel os_osx
+# 
+#
 
 if [ -z "$OWROOT" ]; then
     . ./setvars.sh
@@ -67,11 +72,11 @@ else
             if [ -z "$1" ]; then
                 builder build
             else
-                builder $1
+                builder $@
             fi
             RC=$?
         fi
     fi
 fi
 cd $OWROOT
-exit $RC
+#exit $RC

@@ -1,6 +1,6 @@
 #!/bin/sh
 # *****************************************************************
-# setvars - Linux version
+# setvars - OSX version
 # *****************************************************************
 # NOTE: Do not use this script directly, but copy it and
 #       modify it as necessary for your own use!!
@@ -13,7 +13,7 @@
 # of the software. dosemu can hang if OWROOT is long
 # or contain long names of the directories.
 
-export OWROOT=$(realpath `pwd`)
+export OWROOT=$(pwd)
 
 # Set this entry to identify your toolchain used by build process
 # supported values are WATCOM GCC CLANG
@@ -27,7 +27,7 @@ export OWDOCBUILD=0
 
 # Set this variable to 1 to suppress tools GUI version build
 # If it is used then only tools character mode version is build
-# export OWGUINOBUILD=1
+export OWGUINOBUILD=1
 
 # Set this variable to list of OW projects to suppress their build
 # Example export OWNOBUILD=ide browser dlgprs

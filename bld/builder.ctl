@@ -81,7 +81,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/win386/wbind/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/browser/dlgprs/builder.ctl ]
 # Build help compilers and tools
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
@@ -96,7 +96,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/mkdisk/builder.ctl ]
 # The following tools are required by F77
-[ INCLUDE <OWSRCDIR>/f77/utils/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/f77/utils/builder.ctl ]
 
 ## The following tools are required by tests
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
@@ -118,9 +118,9 @@ cdsay .
 #[ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
-#[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
+###[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 ## Build gui/aui lib and the profiler
-#[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
+###[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/aui/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
 #[ ENDIF ]
@@ -145,7 +145,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rtdll/builder.ctl ]
 #
-[ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/f77/f77lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/fpuemu/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/graphlib/builder.ctl ]
@@ -173,7 +173,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/cg/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plusplus/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/f77/wfc/builder.ctl ]
 # Resource tools, first Resource compiler
 [ INCLUDE <OWSRCDIR>/rc/builder.ctl ]
 # Continue with SDK tools
@@ -185,33 +185,33 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wcl/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/f77/wfl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wstrip/builder.ctl ]
 # User interface libs
 [ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/aui/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/gui/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/aui/builder.ctl ]
 # The vi(w) editor
 [ INCLUDE <OWSRCDIR>/rcsdll/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/vi/builder.ctl ]
 # Build the debugger and sampler
 [ INCLUDE <OWSRCDIR>/dip/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mad/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/rsilib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wattcp/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/trap/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/wv/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/wsample/builder.ctl ]
 # GUI tools libraries
-[ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
 # Other GUI tools
-[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/browser/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/browser/builder.ctl ]
 # The IDE tools
-[ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
 # The miscelaneous tools
 [ INCLUDE <OWSRCDIR>/cmdedit/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cvpack/builder.ctl ]
@@ -224,9 +224,9 @@ cdsay .
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples
-[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
 # Build help viewer
-[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 # Build help compilers
 [ INCLUDE <OWSRCDIR>/hcdos/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/hcwin/builder.ctl ]
@@ -236,9 +236,9 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/redist/builder.ctl ]
 # Build installer tools
 [ INCLUDE <OWSRCDIR>/uninstal/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
 # Build text documents
-[ INCLUDE <OWSRCDIR>/docstxt/builder.ctl ]
+##[ INCLUDE <OWSRCDIR>/docstxt/builder.ctl ]
 
 # only test build for now
 #[ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
@@ -264,7 +264,7 @@ cdsay .
 #==========================================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
-[ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
+#[ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mathtest/builder.ctl ]

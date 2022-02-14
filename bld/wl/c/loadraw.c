@@ -46,6 +46,8 @@
 #include "loadraw.h"
 #include "loadfile.h"
 
+// *JiK*
+//#include "ideentry.h"
 
 #ifdef _RAW
 
@@ -74,6 +76,21 @@ static bool WriteBinSegGroup( group_entry *group )
         CurrSect = sect;
         finfo = sect->outfile;
         file_loc = GROUP_FILE_LOC( group );
+
+        // *JiK* Hotfix for negative file_loc value.. Also not that math is 
+        // done using 32 bits so they just look very large number in 64 bits
+        // host system.
+        //
+        // The hotfix affects the ORDER directive and its offset parameter.
+
+        if ((int32_t)file_loc < 0) {
+            char buf[128];
+            sprintf(buf,"Warning! Negative offset %08lx in section %d of output %s",
+                file_loc,sect->ovlref,finfo->fname);
+            WriteStdOutWithNL(buf);
+            file_loc = (~file_loc + 1) & 0xffffffff;
+        }
+
         // Offset may make this go negative for NOEMIT classes or segments
         if( (long)file_loc >= 0 ) {
             if( file_loc > finfo->file_loc ) {
