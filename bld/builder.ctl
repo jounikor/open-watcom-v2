@@ -140,6 +140,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/w16api/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/w32api/builder.ctl ]
 # Continue with runtime libraries.
+[ INCLUDE <OWSRCDIR>/libwsc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/mathlib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cpplib/builder.ctl ]
@@ -181,6 +182,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/commonui/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/sdk/builder.ctl ]
 # Now miscellaneous command line tools
+[ INCLUDE <OWSRCDIR>/wscromtool/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ndisasm/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/exedump/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/dmpobj/builder.ctl ]

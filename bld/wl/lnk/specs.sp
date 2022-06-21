@@ -11,6 +11,34 @@
 :: FIXME: should -bd and others also be passed?
 :endsegment
 #
+system begin wsc
+:segment Pspecs
+    ARCH i86 -bt=dos
+:elsesegment Pwlsystem
+    #output raw offset=0x20000
+    output raw
+    option nodefaultlibs,fillchar=0xaa,map,symfile,stack=512
+    order   clname BEGDATA segaddr=0x00 segment _NULL
+            #clname BEGDATA NOEMIT segaddr=0x00 segment _NULL
+            #clname DATA NOEMIT segment _DATA
+            # this is a hack(?) to get the _DATA outputted to ROM..
+            clname DATA segment _DATA
+            clname CONST
+            clname CONST2
+            clname BSS
+            clname STACK segaddr=0xe0
+            clname BEGCODE segaddr=0x2000
+            clname CODE segment _TEXT
+            #clname FAR_DATA
+            #clname ROMDATA
+            #clname ROMDATAE
+    libpath %WATCOM%/libwsc
+    libfile wsccrt0.obj
+    format dos ^
+:endsegment
+end
+
+#
 system begin dos
 :segment Pspecs
     ARCH i86 -bt=dos

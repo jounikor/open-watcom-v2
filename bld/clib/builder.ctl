@@ -15,6 +15,9 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
+    #<CCCMD> startup/library/msdos.086/ml/wsc.obj                    <OWRELROOT>/libwsc/wsccrt0.obj
+    #<CCCMD> startup/library/msdos.086/mm/wsc.obj                    <OWRELROOT>/libwsc/wsccrt0m.obj
+
     <CCCMD> library/msdos.086/mc/clibc.lib                  <OWRELROOT>/lib286/dos/clibc.lib
     <CCCMD> library/msdos.086/mh/clibh.lib                  <OWRELROOT>/lib286/dos/clibh.lib
     <CCCMD> library/msdos.086/ml/clibl.lib                  <OWRELROOT>/lib286/dos/clibl.lib

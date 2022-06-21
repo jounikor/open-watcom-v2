@@ -47,7 +47,8 @@
 #include "loadfile.h"
 
 // *JiK*
-//#include "ideentry.h"
+#include <stdint.h>
+#include "ideentry.h"
 
 #ifdef _RAW
 

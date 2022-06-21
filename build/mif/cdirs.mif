@@ -1,3 +1,6 @@
+!ifndef libwsc_dir
+libwsc_dir       = $(src_dir)/libwsc
+!endif
 !ifndef bench_dir
 bench_dir       = $(src_dir)/bench
 !endif
