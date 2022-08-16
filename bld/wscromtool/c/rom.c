@@ -241,7 +241,7 @@ static int load_rom(char *rom_name, char *aux_name, int *symbols,
     FILE *fh_rom = NULL;
     FILE *fh_aux = NULL;
     int romlen, orglen;
-    int offset = 2*65536;
+    int offset = symbols[__romstart];
     int shift = 0;
     int auxlen, auxpos;
     int datlen = symbols[__enddata] - symbols[__begdata];
@@ -249,6 +249,15 @@ static int load_rom(char *rom_name, char *aux_name, int *symbols,
 
     assert(datlen >= 0);
     assert(datpos+datlen >= 65536);
+
+    if (g_verbose) {
+        printf("offset: 0x%08x, datlen 0x%08x, datpos 0x%08x\n",
+            offset,datlen,datpos);
+    }
+
+    if (offset & 0xffff) {
+        return ERR_WSC_ROMALIGNMENT;
+    }
 
     if ((fh_rom = fopen(rom_name,"rb")) == NULL) {
         return ERR_WSC_FILEOPEN;

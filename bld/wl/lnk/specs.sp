@@ -27,7 +27,7 @@ system begin wsc
             clname CONST2
             clname BSS
             clname STACK segaddr=0xe0
-            clname BEGCODE segaddr=0x2000
+            clname BEGCODE segaddr=0x3000
             clname CODE segment _TEXT
             #clname FAR_DATA
             #clname ROMDATA

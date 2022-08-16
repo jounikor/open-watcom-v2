@@ -1,4 +1,4 @@
-## WonderSwan Color tool chain (BETA) based on Open Watcom v2 Fork
+## WonderSwan Color tool chain (BETA 2) based on Open Watcom v2 Fork
 
 This fork and branch contain tools and modification to compile C-programs to [WonderSwan Color](https://en.wikipedia.org/wiki/WonderSwan) handheld console target. 
 
@@ -42,14 +42,15 @@ Bear in mind that:
 
 ### Assumptions and memory map layout when main(void) is called ###
 * REG_BANK_ROM2 is set to $ff.
-* REG_BANK_ROM0 is set to "first bank" of the ROM.
-* REG_BANK_ROM1 is set to ??.
+* REG_BANK_ROM0 is set to ??.
+* REG_BANK_ROM1 is set to "first bank" of the ROM.
 * REG_BANK_SRAM is set to ??.
-* Code execution (wsccrt0) always starts from `$2000:0000` and in the first ROM bank.
+* Code execution (wsccrt0) always starts from `$3000:0000` and in the first ROM bank.
   - Your C main() entry point should really be in the first ROM bank i.e., where the wsccrt0 is also located. Actually the current wsccrt0 assumes this.
   - No parameters are passed to main().
 * The WS(C) IRQ base is set to `$0000:0020`.
 * All WS(C) IRQs are turned off and acknowledged. CPU IRQs are enabled. 
+* The ROM Bank design here assumes that the REG_BANK_ROM0 i.e., memory `$2000:0000 -> $2000:ffff` is used for raw data bank switching. 
 
 ### Additional information included into the ROM ###
 * The `wscromtool` uses bytes from `$fffe:0006 to $fffe:000f` in the last ROM bank in addition to the standard ROM metadata and reset vector.

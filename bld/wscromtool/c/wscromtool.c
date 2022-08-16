@@ -47,7 +47,7 @@
  */
 
 #define VER_MAJOR 0
-#define VER_MINOR 1
+#define VER_MINOR 2
 
 /* global flags */
 bool g_verbose = false;

@@ -57,7 +57,7 @@ extern void SET_BANK_SRAM(unsigned char __bank);
 	__parm   [al];
 
 /* Calculate the ROM Bank relative to start of additional data bank segments */
-#define GET_DATA_BANK(n) ((256-n+__wsc_data_bank) & 0xff)
+#define GET_DATA_BANK(n) ((n+__wsc_data_bank) & 0xff)
 
 /* Other helper inline ASM functions */
 extern void OUTB(unsigned char __port, unsigned char __value);

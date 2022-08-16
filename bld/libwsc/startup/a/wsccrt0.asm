@@ -153,8 +153,8 @@ nodata:
         out     REG_INT_ACK,al
 
         ; The assumption at this point is that
-        ; ROM0 is set to the first BANK
-        ; ROM1 is set to ??
+        ; ROM0 is set to ??
+        ; ROM1 is set to the first BANK
         ; ROM2 is set to the last BANK
         ; There's no return from main().
         sti
