@@ -1,4 +1,4 @@
-## WonderSwan Color tool chain (BETA 2) based on Open Watcom v2 Fork
+## WonderSwan Color tool chain (BETA 3) based on Open Watcom v2 Fork
 
 This fork and branch contain tools and modification to compile C-programs to [WonderSwan Color](https://en.wikipedia.org/wiki/WonderSwan) handheld console target. 
 
@@ -9,9 +9,12 @@ Bear in mind that:
 * Testing has been limited.. and what has been done is done against Mednafen.
 
 ### What is provided ###
-* A new `wsc` target added into the `wlink.lnk` i.e., use:
-  - `wcl -bcl=wsc` to compile and link for the WonderSwan Color.
-  - `wcc -bt=wsc` to compile for the WonderSwan Color.
+* Two new targets added into the `wlink.lnk`: for small ROMs `wsc` and `wscl` for larger ROMs:
+  - `wcl -bcl=wsc` to compile and link for the WonderSwan Color. Program code starts at `$2000:0000`.
+  - `wcc -bt=wsc` to compile for the WonderSwan Color. 
+  - `wcl -bcl=wscl` to compile and link for the WonderSwan Color. Program code starts at `$4000:0000`.
+  - `wcc -bt=wscl` to compile for the WonderSwan Color.
+
 * A `wscromtool` to convert the output flat binary to WonderSwan Color ROM. There are few quirks to it.. which will be documented later..
 * A simple `wsccrt0.obj` to do the required initialization and call your C main().
 * A simple `libwscl.lib` stub for all kinds of helper fuctions.
@@ -30,7 +33,6 @@ Bear in mind that:
   - Another trick is to compile with `-nd=somename` to define a special prefix for the "CONST", "CONST2", "\_DATA", and "\_BSS" segment names. However, this will move also your statically allocated variables into ROM area thus making them immutable..
   - It is a good practise to check how your map file looks like to spot unwanted surprises.
 * The map file is always produced by default. The map file is required by the `wscromtool`.
-* Currently only 1MB (8Mbit) for code (text segment) is supported and no support for overlays. “640K ought to be enough for anybody.”
 * Do not link against generic Watcom provided libraries including the C Library.
   - It is still possibe/safe to include certain OWC provide headers such as `stdint.h`. However, you are on your own here.
 * No attempt has been made to ensure that C++ works.
@@ -39,18 +41,25 @@ Bear in mind that:
   - `extern unsigned char __wsc_data_bank`, which is initialized by the `wsccrt0`. This variable contains the first 'additional' raw data ROM bank added by the `wscromtool`, if any.
   - `extern unsigned char __wsc_first_bank`, which is initialized by the `wsccrt0`. This variable contains the first ROM bank where the code execution starts.
   - Several helper (inline ASM) functions/macros for bank switching and handling IO ports.
+* If your compile/linking target is `wsc`:
+  - The compiled code execution starts at `$2000:0000` thus leaving 917504 bytes for compiled code and data.
+  - Raw data banks are placed at the beginning of the ROM (preceding the compiled code).
+  - Minimum 1Mbit and up to 128Mbit ROMs are supported.
+* If your compile/linking target is `wscl`:
+  - The compiled code execution starts at `$4000:0000` thus leaving 786432 bytes for compiled code and data. However, this arrangement leaves both REG_BANK_ROM0 & REG_BANK_ROM1 fully unoccupied and available for the programmer to exploit.
+  - Raw data banks are placed at the beginning of the ROM (preceding the compiled code).
+  - *Minimum 8Mbit* and up to 128Mbit ROMs are supported. The `wscromtool` will make sure ROM between `$4000:0000` and `$ffff:ffff` is always fully mappable.
+
 
 ### Assumptions and memory map layout when main(void) is called ###
-* REG_BANK_ROM2 is set to $ff.
-* REG_BANK_ROM0 is set to ??.
-* REG_BANK_ROM1 is set to "first bank" of the ROM.
-* REG_BANK_SRAM is set to ??.
-* Code execution (wsccrt0) always starts from `$3000:0000` and in the first ROM bank.
-  - Your C main() entry point should really be in the first ROM bank i.e., where the wsccrt0 is also located. Actually the current wsccrt0 assumes this.
+* REG_BANK_ROM2 is $ff.
+* REG_BANK_ROM0 is set to "first bank" of the ROM.
+* REG_BANK_ROM1 is ??.
+* REG_BANK_SRAM is ??.
+* Code execution (wsccrt0) starts either from `$2000:0000` (the compile/linkin target was set to `wsc`) or from `$4000:0000` (the compile/linkin target was set to `wscl`).
   - No parameters are passed to main().
 * The WS(C) IRQ base is set to `$0000:0020`.
 * All WS(C) IRQs are turned off and acknowledged. CPU IRQs are enabled. 
-* The ROM Bank design here assumes that the REG_BANK_ROM0 i.e., memory `$2000:0000 -> $2000:ffff` is used for raw data bank switching. 
 
 ### Additional information included into the ROM ###
 * The `wscromtool` uses bytes from `$fffe:0006 to $fffe:000f` in the last ROM bank in addition to the standard ROM metadata and reset vector.
@@ -69,7 +78,7 @@ The `wscromtool` is used to:
 To see the top level commands and options just enter the tool name:
 ```
 jounis-MBP:open-watcom-v2 jouni$ wscromtool 
-WonderSwan ROM tool v0.1 (c) 2022 Jouni 'Mr.Spiv' Korhonen
+WonderSwan ROM tool v0.3 (c) 2022 Jouni 'Mr.Spiv' Korhonen
 
 Usage: wscromtool command [options] [files..]
 Commands:
@@ -161,7 +170,7 @@ See the normal OpenWatcom build instructions. The Wonderswan modifications shoul
 
 ### TODO ###
 - [x] Non-const data initialization support.
-- [ ] Consider rearraning segments and everything so that code starts somewhere after 0x3000:0000 instead of 0x2000:0000.
+- [x] Consider rearraning segments and everything so that code starts somewhere after 0x4000:0000 instead of 0x2000:0000.
 - [x] wscromtool 'command' for building the final ROM.
 - [x] wscromtool 'command' for building the 'filesystem' for additional data segments.
 - [x] Refactor (i.e. implement proper) wsccrt0.

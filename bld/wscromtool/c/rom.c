@@ -138,6 +138,7 @@ static uint16_t rom_checksum(uint8_t *rom, int romlen)
  * @param[out] meta         A ptr to meta to initialize.
  * @param[in] romlen        Length of the ROM. Must be multiple of 64KB and rounded 
  *                          up to supported ROM sizes.
+ * @param[in] is_large      True if entire ROM0 bank is used for code.
  * @param[in] publisher     Publisher ID.
  * @param[in] mono          True is WS and False if WSC.
  * @param[in] game_id       Game ID.
@@ -153,6 +154,8 @@ static uint16_t rom_checksum(uint8_t *rom, int romlen)
 
 static void init_metadata(rom_metadata_t *meta,
     int romlen,
+    bool is_large,
+    uint8_t text_seg,
     uint8_t data_seg,
     uint8_t publisher,
     bool mono,
@@ -164,20 +167,22 @@ static void init_metadata(rom_metadata_t *meta,
     bool vertical,
     bool rtc)
 {
-    uint8_t bank,flags;
+    uint8_t flags = 0;
     rom_size_t size;
 
     find_rom_size(romlen,&size);
 
-    flags = 0;
-    bank = 256 - (romlen >> 16);
-
-    memcpy(&meta->bootstrap[0],bootstrap,sizeof(bootstrap));
-
+    if (is_large) {
+        memcpy(&meta->bootstrap[0],bootstrap_large,sizeof(bootstrap_large));
+    } else {
+        memcpy(&meta->bootstrap[0],bootstrap,sizeof(bootstrap));
+    }
+    
     meta->null = 0;
 
+
     /* calculate the BANK where our startup code resides.. */
-    meta->bootstrap[BOOTSTRAP_BANK_OFFSET] = bank;
+    meta->bootstrap[BOOTSTRAP_BANK_OFFSET] = text_seg;
     meta->bootstrap[DATA_BANK_OFFSET] = data_seg;
     meta->publisher = publisher;
     meta->system = 0 ? mono : 1;
@@ -229,6 +234,8 @@ static void patch_rom_metadata(uint8_t *rom, int romlen, rom_metadata_t *meta)
  * @param[in] symbols   A ptr to linker symbols putput.
  * @param[out] rom      A ptr to retuned rom buffer. The caller is responsible 
  *                      for freeing the buffer when done.
+ * @param[out] text_seg A ptr to start of the ROM text segment (where
+ *                      execution starts.
  * @param[out] data_seg A ptr to start of the aux data segment.
  *
  * @return ROM length rounded up to legal ROM size.
@@ -236,16 +243,17 @@ static void patch_rom_metadata(uint8_t *rom, int romlen, rom_metadata_t *meta)
 
 
 static int load_rom(char *rom_name, char *aux_name, int *symbols, 
-    uint8_t **rom, uint8_t *data_seg)
+    uint8_t **rom, uint8_t *text_seg, uint8_t *data_seg, bool *is_large)
 {
     FILE *fh_rom = NULL;
     FILE *fh_aux = NULL;
-    int romlen, orglen;
+    int romlen, orglen, romsta;
     int offset = symbols[__romstart];
-    int shift = 0;
-    int auxlen, auxpos;
+    int auxlen, orgauxlen;
     int datlen = symbols[__enddata] - symbols[__begdata];
     int datpos = symbols[__begdata];
+    
+    *is_large = offset >= LARGE_OFFSET ? true : false;
 
     assert(datlen >= 0);
     assert(datpos+datlen >= 65536);
@@ -288,60 +296,55 @@ static int load_rom(char *rom_name, char *aux_name, int *symbols,
         auxlen = 0;
     }
     
+    orgauxlen = auxlen;
+
     /* Round up to next full 64KB */
     romlen = (romlen + 0xffff) & ~0xffff;
+    auxlen = (auxlen + 0xffff) & ~0xffff;
+
+    /* If we have a large code ROM then pad if needed..
+       The ROM will always fill $4000:0000 to $ffff:ffff
+    */
+    if (*is_large) {
+        if (romlen < (0x100000 - offset)) {
+            romlen = 0x100000 - offset;
+        }
+    }
+
+    if (orglen > (romlen - datlen - sizeof(rom_metadata_t))) {
+        if (*is_large) {
+            fclose(fh_rom);
+            fclose(fh_aux);
+            return ERR_WSC_ROMSIZE; 
+        }
+    
+        romlen += 65536;
+    }
+
+    /* now we can calculate the start of code.. */
+    *text_seg = (256 - (romlen >> 16));
+    romsta = romlen;
 
     /* Add auxiliary data segments.. it can be 0 bytes */
     romlen += auxlen;
 
-    /* Round up to next legal ROM size */
-    if ((romlen = find_rom_size(romlen,NULL)) < 0) {
+    /* Round up to next legal ROM size.. */
+    romlen = find_rom_size(romlen,NULL);
+
+    if (romlen < 0) {
         fclose(fh_rom);
         fclose(fh_aux);
-        return romlen;
+        return romlen;        
     }
 
-    auxpos = (romlen - auxlen) & ~0xffff;
+    /* Now we know the start of raw data banks */
+    *data_seg = (256 - (romlen >> 16));
 
-    /* can we safely patch the meta+data at the end of the ROM? */
-    if (auxlen == 0) {
-        /* Case no auxdata */
-        *data_seg = 0;  // no data segments..
-
-        if (g_verbose) {
-            printf("No AUX -> %08x > %08lx ?\n",orglen,romlen-datlen-sizeof(rom_metadata_t));
-        }
-
-        if (orglen > romlen-datlen-sizeof(rom_metadata_t)) {
-            if ((romlen = find_rom_size(romlen+65536,NULL)) < 0) {
-                fclose(fh_rom);
-                fclose(fh_aux);
-                return romlen;
-            }
-        }
-    } else {
-        /* Case auxdata.. */
-        if (g_verbose) {
-            printf("AUX (%d) -> %08x > %08lx ?\n",auxlen,auxpos+auxlen,
-                romlen-datlen-sizeof(rom_metadata_t));
-        }
-
-        if (auxpos+auxlen > romlen-datlen-sizeof(rom_metadata_t)) {
-            if ((romlen = find_rom_size(romlen+65536,NULL)) < 0) {
-                fclose(fh_rom);
-                fclose(fh_aux);
-                return romlen;
-            }
-            shift = 65536;
-        }
-        
-        /* fix auxpos for the changed ROM size */
-        auxpos = (romlen - shift - auxlen) & ~0xffff;
-        *data_seg = 256 - ((romlen - auxpos) >> 16);
-    }
 
     if (g_verbose) {
-        printf("ROM -> %08x %08x %08x %08x %08x\n",romlen,orglen,datlen,auxlen,auxpos);
+        printf( "romlen: %08x, orglen: %08x, romsta: %08x\n"
+                "datlen: %08x, auxlen: %08x, orgauxlen: %08x\n",
+                romlen,orglen,romsta,datlen,auxlen,orgauxlen);
     }
 
     /* Allocate memory for the rounded up ROM + offset bytes of RAM+SRAM
@@ -353,8 +356,18 @@ static int load_rom(char *rom_name, char *aux_name, int *symbols,
         return ERR_WSC_MALLOC;
     }
 
-    /* Read the game ROM */
-    if (fread(*rom,1,orglen,fh_rom) != orglen) {
+    /* Read the aux data.. position at the beginnin of the ROM */
+    if (auxlen > 0 && (fread(*rom,1,orgauxlen,fh_aux) != orgauxlen)) {
+        fclose(fh_rom);
+        fclose(fh_aux);
+        free(*rom);
+        return ERR_WSC_FILEREAD;
+    }
+
+    /* Read the game ROM.. position at the end of the ROM */
+    fseek(fh_rom,offset,SEEK_SET);
+
+    if (fread(*rom+romlen-romsta,1,orglen,fh_rom) != orglen) {
         fclose(fh_rom);
         fclose(fh_aux);
         free(*rom);
@@ -371,17 +384,9 @@ static int load_rom(char *rom_name, char *aux_name, int *symbols,
         return ERR_WSC_FILEREAD;
     }
 
+
     fclose(fh_rom);
-
-    /* Read aux data */
-    if (auxlen > 0 && (fread(*rom+auxpos,1,auxlen,fh_aux) != auxlen)) {
-        fclose(fh_aux);
-        free(*rom);
-        return ERR_WSC_FILEREAD;
-    }
-
     fclose(fh_aux);
-
 
     return romlen;
 }
@@ -486,12 +491,16 @@ int rom(int argc, char** argv)
     uint8_t game_id = 0;
     uint8_t game_rev = 0;
     uint8_t save_size = 0;
-    uint8_t data_seg = 0;
+
     bool mono = false;
     bool rtc = false;
     bool vertical = false;
     bool bus_8bit = false;
     bool cycle_1 = false;
+
+    uint8_t data_seg = 0;
+    uint8_t text_seg = 0;
+    bool is_large;
 
     int symbols[__sym_type_max];
     uint8_t *rom;
@@ -561,13 +570,13 @@ int rom(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    if ((romlen = load_rom(input_file,aux_file,symbols,&rom,&data_seg)) < 0) {
+    if ((romlen = load_rom(input_file,aux_file,symbols,&rom,&text_seg,&data_seg,&is_large)) < 0) {
         fprintf(stderr,"**Error %d: failed to load rom file '%s'\n",
             romlen,argv[optind+0]);
         exit(EXIT_FAILURE);
     }
 
-    init_metadata(&meta,romlen,data_seg,pub_id,mono,game_id,game_rev,
+    init_metadata(&meta,romlen,is_large,text_seg,data_seg,pub_id,mono,game_id,game_rev,
         save_size,cycle_1,bus_8bit,vertical,rtc);
 
     patch_rom_metadata(rom,romlen,&meta);

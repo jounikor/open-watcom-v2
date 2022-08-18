@@ -12,6 +12,7 @@ typedef struct {
  */
 
 int find_rom_size(int romlen, rom_size_t *size);
+int find_rom_size_min8Mb(int romlen, rom_size_t *size);
 
 
 #endif  /* _WSCROMTOOL_DEFINED */

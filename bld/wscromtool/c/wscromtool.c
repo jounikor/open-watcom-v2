@@ -47,7 +47,7 @@
  */
 
 #define VER_MAJOR 0
-#define VER_MINOR 2
+#define VER_MINOR 3
 
 /* global flags */
 bool g_verbose = false;
@@ -134,6 +134,24 @@ int find_rom_size(int romlen, rom_size_t *size)
 
     return ERR_WSC_ROMSIZE;
 }
+
+int find_rom_size_min8Mb(int romlen, rom_size_t *size)
+{
+    for (int n = 3; n < sizeof(rom_size_table)/sizeof(rom_size_t); n++) {
+        if (romlen > rom_size_table[n].size_max) {
+            continue;
+        } else {
+            if (size) {
+                size->size_byte = rom_size_table[n].size_byte;
+                size->size_max  = rom_size_table[n].size_max;
+            }
+            return rom_size_table[n].size_max;
+        }
+    }
+
+    return ERR_WSC_ROMSIZE;
+}
+
 
 /**
  * @brief Program entrypoint, which calls separate subcommands. 
